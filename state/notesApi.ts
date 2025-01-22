@@ -8,7 +8,7 @@ export interface Note {
 
 export interface GetNotesResponse {
   notes: Note[]
-  totalCount: number
+  nextOffset: number
 }
 
 export interface NoteFilters {
@@ -32,16 +32,10 @@ export const notesApiSlice = createApi({
       },
       infiniteQueryOptions: {
         initialPageParam: { offset: 0, searchText: '', pinnedOnly: false },
-        // getPreviousPageParam: (firstPage, allPages, firstPageParam) => {
-        //   const { offset, ...filters } = firstPageParam
-        //   if (offset - PAGE_SIZE >= 0) {
-        //     return { ...filters, offset: offset - PAGE_SIZE }
-        //   }
-        // },
         getNextPageParam: (lastPage, allPages, lastPageParam) => {
           const { offset, ...filters } = lastPageParam
-          if (lastPage.totalCount >= offset + PAGE_SIZE) {
-            return { ...filters, offset: offset + PAGE_SIZE }
+          if (lastPage.nextOffset) {
+            return { ...filters, offset: lastPage.nextOffset }
           }
         }
       }

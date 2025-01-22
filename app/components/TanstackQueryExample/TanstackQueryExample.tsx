@@ -10,22 +10,27 @@ import { getPinnedOnly } from '@/state/notes'
 import { fetchServerPage } from './tanstackMockServer'
 import Note from '../Note'
 import useDebouncedSearchText from '../useDebouncedSearchText'
-import { PAGE_SIZE } from '@/state/notesApi'
+import { NoteFilters, PAGE_SIZE } from '@/state/notesApi'
 
 export default function App() {
   const searchText = useDebouncedSearchText()
   const pinnedOnly = useAppSelector(getPinnedOnly)
 
+  const parentRef = React.useRef<HTMLDivElement>(null)
+
+  const filters: NoteFilters = {
+    searchText,
+    pinnedOnly
+  }
+
   const { status, data, isFetchingNextPage, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ['projects', searchText, pinnedOnly],
-    queryFn: ctx => fetchServerPage({ limit: PAGE_SIZE, offset: ctx.pageParam, searchText, pinnedOnly }),
+    queryFn: ctx => fetchServerPage({ limit: PAGE_SIZE, offset: ctx.pageParam, ...filters }),
     getNextPageParam: lastGroup => lastGroup.nextOffset,
     initialPageParam: 0
   })
 
   const fetchedNotes = data ? data.pages.flatMap(d => d.notes) : []
-
-  const parentRef = React.useRef<HTMLDivElement>(null)
 
   const rowVirtualizer = useVirtualizer({
     count: hasNextPage ? fetchedNotes.length + 1 : fetchedNotes.length,

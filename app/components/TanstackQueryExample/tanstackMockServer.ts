@@ -1,4 +1,4 @@
-import { generateMockNotes } from '@/app/components/ReduxToolkitExample/mockServer'
+import { generateMockNotes } from '@/app/components/ReduxToolkitExample/reduxToolkitMockServer'
 import { Note } from '@/state/notesApi'
 
 interface FetchPageParameters {

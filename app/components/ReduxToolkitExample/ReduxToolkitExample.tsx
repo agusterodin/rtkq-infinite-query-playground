@@ -1,16 +1,51 @@
 'use client'
 
 import { useRef } from 'react'
-import useInfiniteVirtualizedQueryList from './useInfiniteVirtualizedNotesList'
 import Searchbox from '../Searchbox'
 import OnlyShowPinnedCheckbox from '../PinnedCheckbox'
 import Note from '../Note'
+import React from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import useDebouncedSearchText from '../useDebouncedSearchText'
+import { useAppSelector } from '@/state/store'
+import { getPinnedOnly } from '@/state/notes'
+import { NoteFilters, useGetNotesCursorInfiniteQuery } from '@/state/notesApi'
 
 export default function VirtualInfiniteQueryTest() {
+  const searchText = useDebouncedSearchText()
+  const pinnedOnly = useAppSelector(getPinnedOnly)
+
   const parentRef = useRef<HTMLDivElement>(null)
 
-  const { fetchedNotes, infiniteQuery, rowVirtualizer } = useInfiniteVirtualizedQueryList(parentRef)
-  const { isLoading, isError, hasNextPage } = infiniteQuery
+  const filters: NoteFilters = {
+    searchText,
+    pinnedOnly
+  }
+
+  const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useGetNotesCursorInfiniteQuery(filters, {
+    initialPageParam: { offset: 0, ...filters }
+  })
+
+  const fetchedNotes = data ? data.pages.flatMap(queryPage => queryPage.notes) : []
+
+  const rowVirtualizer = useVirtualizer({
+    count: hasNextPage ? fetchedNotes.length + 1 : fetchedNotes.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 23,
+    overscan: 50
+  })
+
+  React.useEffect(() => {
+    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse()
+
+    if (!lastItem) {
+      return
+    }
+
+    if (lastItem.index >= fetchedNotes.length - 1 && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
+    }
+  }, [hasNextPage, fetchNextPage, fetchedNotes.length, isFetchingNextPage, rowVirtualizer.getVirtualItems()])
 
   if (isLoading) {
     return <div>Loading...</div>

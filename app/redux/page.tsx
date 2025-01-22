@@ -1,7 +1,7 @@
 'use client'
 
 import VirtualInfiniteQueryTest from '../components/ReduxToolkitExample/ReduxToolkitExample'
-import '../components/ReduxToolkitExample/mockServer'
+import '../components/ReduxToolkitExample/reduxToolkitMockServer'
 
 export default function ReduxToolkitPage() {
   return (
