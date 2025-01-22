@@ -2,10 +2,11 @@
 
 import { useRef } from 'react'
 import useInfiniteVirtualizedQueryList from './useInfiniteVirtualizedNotesList'
-import Searchbox from './Searchbox'
-import OnlyShowPinnedCheckbox from './PinnedCheckbox'
+import Searchbox from '../Searchbox'
+import OnlyShowPinnedCheckbox from '../PinnedCheckbox'
+import Note from '../Note'
 
-export default function InfiniteQueryTest() {
+export default function VirtualInfiniteQueryTest() {
   const parentRef = useRef<HTMLDivElement>(null)
 
   const { fetchedNotes, infiniteQuery, rowVirtualizer } = useInfiniteVirtualizedQueryList(parentRef)
@@ -29,7 +30,7 @@ export default function InfiniteQueryTest() {
         <div
           className="relative w-full"
           style={{
-            height: `${rowVirtualizer.getTotalSize()}px`
+            height: rowVirtualizer.getTotalSize()
           }}
         >
           {rowVirtualizer.getVirtualItems().map(virtualRow => {
@@ -41,17 +42,11 @@ export default function InfiniteQueryTest() {
                 key={virtualRow.index}
                 className="absolute left-0 top-0 w-full"
                 style={{
-                  height: `${virtualRow.size}px`,
+                  height: virtualRow.size,
                   transform: `translateY(${virtualRow.start}px)`
                 }}
               >
-                {isLoaderRow && hasNextPage ? (
-                  'Loading more items...'
-                ) : (
-                  <div className="px-2">
-                    {note.uid} - {note.name} {note.pinned && '(Pinned)'}
-                  </div>
-                )}
+                {isLoaderRow && hasNextPage ? 'Loading more items...' : <Note {...{ note }} />}
               </div>
             )
           })}

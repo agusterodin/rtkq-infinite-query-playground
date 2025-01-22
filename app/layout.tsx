@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { StoreProvider } from './StoreProvider'
-import '../mockServer'
+import './components/ReduxToolkitExample/mockServer'
 import '../index.css'
 
 interface Props {
@@ -12,7 +12,6 @@ export default function RootLayout({ children }: Props) {
     <StoreProvider>
       <html lang="en">
         <body>
-          <title>RTKQ + Tanstack Virtual</title>
           <section>
             <main>{children}</main>
           </section>

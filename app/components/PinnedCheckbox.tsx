@@ -1,6 +1,5 @@
 import { getPinnedOnly, setPinnedOnly } from '@/state/notes'
 import { useAppDispatch, useAppSelector } from '@/state/store'
-import { on } from 'events'
 
 export default function OnlyShowPinnedCheckbox() {
   const dispatch = useAppDispatch()
@@ -10,14 +9,14 @@ export default function OnlyShowPinnedCheckbox() {
     <div className="flex items-center">
       <input
         type="checkbox"
-        id="onlyShowPinned"
+        id="show-pinned"
         className="mr-2"
         checked={onlyShowPinned}
         onChange={event => {
           dispatch(setPinnedOnly(event.target.checked))
         }}
       />
-      <label htmlFor="onlyShowPinned">Only show pinned</label>
+      <label htmlFor="show-pinned">Only show pinned</label>
     </div>
   )
 }

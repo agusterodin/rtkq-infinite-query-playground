@@ -1,9 +1,9 @@
 'use client'
 
 import { createServer } from 'miragejs'
-import { Note } from './state/notesApi'
+import { Note } from '../../../state/notesApi'
 
-function generateMockNotes(): Note[] {
+export function generateMockNotes(): Note[] {
   const notes: Note[] = []
   for (let i = 0; i < 5000; i++) {
     notes.push({ uid: i.toString(), name: `Note ${i}`, pinned: i % 3 === 0 })

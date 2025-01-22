@@ -8,7 +8,7 @@ import { useDeepCompareEffect } from 'react-use'
 // which would cause a new DOM element to be created and the scroll position to be reset. Unfortunately, scroll position is preserved
 // in a virtualized setup so changing the element's "key" attribute had no effect.
 
-export default function useResetScrollOnFilterChange(pageParams: Record<string, any>[] | undefined, rowVirtualizer: Virtualizer<any, any>) {
+export default function useResetScrollOnFilterChange(rowVirtualizer: Virtualizer<any, any>, pageParams: Record<string, any>[] | undefined) {
   const currentPageParams = pageParams?.[0] || {}
   const currentPageFilters = omit(currentPageParams, 'offset', 'limit')
 

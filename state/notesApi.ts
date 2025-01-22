@@ -16,7 +16,7 @@ export interface NoteFilters {
   pinnedOnly: boolean
 }
 
-const PAGE_SIZE = 50
+export const PAGE_SIZE = 50
 
 export const notesApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: '/mock' }),
@@ -32,12 +32,12 @@ export const notesApiSlice = createApi({
       },
       infiniteQueryOptions: {
         initialPageParam: { offset: 0, searchText: '', pinnedOnly: false },
-        getPreviousPageParam: (firstPage, allPages, firstPageParam) => {
-          const { offset, ...filters } = firstPageParam
-          if (offset - PAGE_SIZE >= 0) {
-            return { ...filters, offset: offset - PAGE_SIZE }
-          }
-        },
+        // getPreviousPageParam: (firstPage, allPages, firstPageParam) => {
+        //   const { offset, ...filters } = firstPageParam
+        //   if (offset - PAGE_SIZE >= 0) {
+        //     return { ...filters, offset: offset - PAGE_SIZE }
+        //   }
+        // },
         getNextPageParam: (lastPage, allPages, lastPageParam) => {
           const { offset, ...filters } = lastPageParam
           if (lastPage.totalCount >= offset + PAGE_SIZE) {

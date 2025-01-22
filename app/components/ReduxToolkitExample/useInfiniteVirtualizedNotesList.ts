@@ -1,11 +1,12 @@
 import { RefObject } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { NoteFilters, useGetNotesCursorInfiniteQuery } from 'state/notesApi'
-import useDebouncedSearchText from './useDebouncedSearchText'
-import useOnLoaderRowInView from './useOnLoaderRowInView'
+import useDebouncedSearchText from '../useDebouncedSearchText'
+import useOnLoaderRowInView from './useFetchWhenLoaderRowInView'
 import useResetScrollOnFilterChange from './useResetScrollOnFilterChange'
 import { useAppSelector } from '@/state/store'
 import { getPinnedOnly } from '@/state/notes'
+import useFetchWhenLoaderRowInView from './useFetchWhenLoaderRowInView'
 
 // An attempt to abstract the virtualization and infinite query logic out of the component so that
 // things are easier to follow. Not sure if this is the ideal abstraction. It doesn't seem obvious how to,
@@ -26,27 +27,23 @@ export default function useInfiniteVirtualizedNotesList<T extends HTMLElement | 
     initialPageParam: { offset: 0, ...filters }
   })
 
-  const { hasNextPage, data, fetchNextPage, isFetchingNextPage } = infiniteQuery
+  const { hasNextPage, data } = infiniteQuery
 
-  const fetchedNotes = data ? data.pages.flatMap(queryPage => queryPage.notes) : []
+  const fetchedItems = data ? data.pages.flatMap(queryPage => queryPage.notes) : []
 
   const rowVirtualizer = useVirtualizer({
-    count: hasNextPage ? fetchedNotes.length + 1 : fetchedNotes.length,
+    count: hasNextPage ? fetchedItems.length + 1 : fetchedItems.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 23,
     overscan: 50
   })
 
-  useOnLoaderRowInView({ rowVirtualizer, fetchedItems: fetchedNotes }, () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  })
+  useFetchWhenLoaderRowInView({ rowVirtualizer, fetchedItems, infiniteQuery })
 
-  useResetScrollOnFilterChange(data?.pageParams, rowVirtualizer)
+  useResetScrollOnFilterChange(rowVirtualizer, data?.pageParams)
 
   return {
-    fetchedNotes,
+    fetchedNotes: fetchedItems,
     infiniteQuery,
     rowVirtualizer
   }
